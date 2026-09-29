@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>علّم الروبوت الأخلاق | عمر أمين محمد أمين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Cairo:wght@400;600;800&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --display:"Baloo Bhaijaan 2","Cairo","Segoe UI",Tahoma,Arial,sans-serif;
+  --bg:#F0F9FF; --surface:#FFFFFF; --ink:#0B3B5C; --muted:#3F6B8C; --line:#BAE6FD;
+  --acc:#0284C7; --acc-soft:#E0F2FE; --hot:#0EA5E9; --hot-ink:#FFFFFF;
+  --navy:#0284C7; --cyan:#7DE3FF; --lemon:#D7EEFF;
+  --ok:#14804F; --bad:#C63B22;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#062033; --surface:#0B3049; --ink:#E6F6FF; --muted:#A3CDE6; --line:#1B5678;
+    --acc:#7DD3FC; --acc-soft:#0F3F5E; --hot:#38BDF8; --hot-ink:#04222F;
+    --navy:#0369A1; --cyan:#7DE3FF; --lemon:#D4EEFF; --ok:#4CD68F; --bad:#FF8E78;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#062033; --surface:#0B3049; --ink:#E6F6FF; --muted:#A3CDE6; --line:#1B5678;
+  --acc:#7DD3FC; --acc-soft:#0F3F5E; --hot:#38BDF8; --hot-ink:#04222F;
+  --navy:#0369A1; --cyan:#7DE3FF; --lemon:#D4EEFF; --ok:#4CD68F; --bad:#FF8E78;
+}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;font-size:18px;line-height:1.9}
+h1,h2,h3,h4,.btn,.cta,.stamp,.m-num,.front b,.big,.rule b,#prog,#who,.tips span,.m-state,.cert .nm,footer .who{font-family:var(--display)}
+h1,h2,h3{line-height:1.45}
+button{font-family:inherit;cursor:pointer;color:inherit}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--hot);outline-offset:3px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+/* ---------- top bar ---------- */
+#bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--navy);color:#fff;border-bottom:3px solid var(--cyan)}
+#bar .wrap{display:flex;align-items:center;gap:6px;padding-top:8px;padding-bottom:8px}
+#bar .links{display:flex;gap:4px;overflow-x:auto;flex:1}
+#bar a{white-space:nowrap;text-decoration:none;font-weight:600;font-size:16px;padding:4px 12px;border-radius:999px;color:#DDF1FF}
+#bar a:hover{background:rgba(255,255,255,.12);color:#fff}
+#prog{flex:none;background:var(--lemon);color:#0B3B5C;font-weight:800;border-radius:999px;padding:2px 14px;font-size:16px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;color:#fff;padding:56px 0 120px;background-color:#0277B5;
+  background-image:
+    radial-gradient(circle at 22% 45%,rgba(255,255,255,.3),transparent 42%),
+    radial-gradient(circle at 88% 12%,rgba(255,255,255,.2),transparent 30%),
+    linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(160deg,#0277B5 0%,#38BDF8 65%,#7DD3FC 100%);
+  background-size:auto,auto,44px 44px,44px 44px,auto}
+.hero .wave{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:70px;color:var(--surface);display:block}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.2fr 1fr;gap:30px;align-items:center}
+.hero h1{font-size:clamp(34px,6.4vw,62px);margin:0 0 16px;font-weight:800}
+.hero .lead{font-size:clamp(18px,2.6vw,22px);margin:0 0 24px;color:#EAF6FF;max-width:32em}
+.stamp{display:inline-block;background:#fff;color:#0277B5;border:3px dashed #5CE1FF;border-radius:16px 16px 16px 4px;padding:10px 18px;font-weight:800;line-height:1.7;margin-bottom:22px;transform:rotate(-1.2deg)}
+.stamp small{display:block;font-weight:600;font-size:15px;color:#3F6485;font-family:"Cairo",sans-serif}
+.cta{display:inline-block;background:#fff;color:#0277B5;font-weight:800;font-size:20px;text-decoration:none;padding:10px 28px;border-radius:14px;box-shadow:0 5px 0 #9FD8FF}
+.cta:hover{transform:translateY(2px);box-shadow:0 3px 0 #9FD8FF}
+.stage{position:relative;display:flex;flex-direction:column;align-items:center}
+.stage .robot-slot{width:min(300px,70vw)}
+.hero-say{background:#fff;color:#0277B5;font-weight:800;border-radius:18px;padding:8px 18px;margin-bottom:14px;position:relative;text-align:center;min-height:3em;display:flex;align-items:center;max-width:290px}
+.hero-say::after{content:"";position:absolute;bottom:-9px;left:50%;margin-left:-10px;border:10px solid transparent;border-bottom:0;border-top-color:#fff}
+
+/* ---------- robot ---------- */
+.robot{display:block;width:100%;height:auto;overflow:visible}
+.robot .m{display:none}
+.robot[data-mood="happy"] .m-happy,.robot[data-mood="sad"] .m-sad,.robot[data-mood="think"] .m-think,.robot[data-mood="wow"] .m-wow{display:inline}
+.robot .blush{display:none}
+.robot[data-mood="happy"] .blush,.robot[data-mood="wow"] .blush{display:inline}
+.robot .eyeg{transform-box:fill-box;transform-origin:center;animation:blink 5s infinite}
+.robot .ant{animation:pulse 1.8s ease-in-out infinite}
+.robot .bob{animation:bob 3.2s ease-in-out infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+@keyframes pulse{50%{opacity:.35}}
+@keyframes bob{50%{transform:translateY(-6px)}}
+
+/* ---------- sections ---------- */
+section{padding:60px 0}
+h2{font-size:clamp(27px,4.6vw,40px);margin:0 0 8px;font-weight:900;line-height:1.4}
+.sub{color:var(--muted);margin:0 0 30px;max-width:40em}
+h3{margin:0}
+
+/* flip cards */
+.flips{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.flip{perspective:1000px;background:none;border:0;padding:0;height:320px;width:100%;text-align:inherit}
+.flip-in{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.flip[aria-pressed="true"] .flip-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:26px;padding:22px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.front{background:var(--c);color:#0B3B5C;align-items:center;text-align:center}
+.front .em{font-size:64px;line-height:1}
+.front b{font-size:24px;font-weight:900}
+.front small{font-size:14px;font-weight:600;opacity:.75}
+.back{background:var(--surface);border:3px solid var(--c);transform:rotateY(180deg);font-size:16px;line-height:1.75}
+.back h3{font-size:21px;font-weight:900}
+.back .eg{background:var(--bg);border-radius:12px;padding:8px 12px;font-size:15px;color:var(--muted)}
+
+/* missions */
+.missions{background:var(--surface);border-block:2px solid var(--line)}
+.mission{border:3px solid var(--ink);border-radius:30px 30px 30px 8px;background:var(--bg);overflow:hidden;margin-bottom:44px}
+.mission:last-child{margin-bottom:0}
+.m-head{display:flex;align-items:center;gap:16px;padding:16px 22px;background:var(--navy);color:#fff}
+.m-num{flex:none;width:48px;height:48px;border-radius:50%;background:var(--cyan);color:var(--navy);font-weight:900;font-size:24px;display:flex;align-items:center;justify-content:center}
+.m-head h3{font-size:clamp(20px,3.4vw,26px);font-weight:900;flex:1}
+.m-state{font-weight:800;font-size:15px;background:rgba(255,255,255,.14);padding:2px 14px;border-radius:999px;white-space:nowrap}
+.m-state.on{background:var(--lemon);color:#0B3B5C}
+.m-body{padding:24px}
+.m-body>p.intro{margin:0 0 20px;color:var(--muted)}
+h4{margin:0 0 10px;font-size:19px;font-weight:800}
+.btn{background:var(--hot);color:var(--hot-ink);border:0;border-radius:12px;padding:8px 20px;font-weight:800;font-size:17px;box-shadow:0 3px 0 #026AA2}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #026AA2}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink);box-shadow:none}
+
+/* bias lab */
+.lab{display:grid;grid-template-columns:1fr 1.5fr;gap:24px}
+.trow{display:flex;align-items:center;gap:10px;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:8px 12px;margin-bottom:10px}
+.trow svg{flex:none;width:34px;height:34px}
+.trow .nm{font-weight:800;flex:1}
+.dots{display:flex;gap:4px}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--acc)}
+.step{width:36px;height:36px;border-radius:10px;border:2px solid var(--ink);background:var(--surface);font-weight:900;font-size:20px;line-height:1}
+.step:hover{background:var(--acc-soft)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.tile{position:relative;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px;display:flex;justify-content:center}
+.tile svg{width:52px;height:52px}
+.tile .bd{position:absolute;top:-8px;left:-8px;width:28px;height:28px;border-radius:50%;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;color:#fff}
+.bd.ok{background:var(--ok)} .bd.maybe{background:#C58A00} .bd.no{background:var(--bad)}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:15px;font-weight:600}
+.bar span:first-child{width:64px}
+.bar .tr{flex:1;height:12px;background:var(--line);border-radius:12px;overflow:hidden}
+.bar .fl{height:100%;background:var(--acc);border-radius:12px;transition:width .4s}
+.verdict{margin:12px 0 0;padding:12px 16px;border-radius:14px;background:var(--surface);border:2px dashed var(--line);font-weight:600}
+.verdict.bad{border-color:var(--bad)} .verdict.good{border-color:var(--ok);border-style:solid}
+
+/* privacy */
+.vault{display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start}
+.door{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:22px;text-align:center}
+.door .lock{font-size:74px;line-height:1.1}
+.meter{height:16px;background:var(--line);border-radius:16px;overflow:hidden;margin:12px 0 6px}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .35s,background .35s}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.chip{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 16px;font-weight:600;font-size:16px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.msg{margin-top:14px;padding:12px 16px;border-radius:14px;background:var(--surface);border:2px dashed var(--line);min-height:3.4em;font-weight:600}
+.msg.bad{border-color:var(--bad)} .msg.good{border-color:var(--ok);border-style:solid}
+
+/* truth */
+.tq{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:22px}
+.tq .say{font-size:22px;font-weight:800;margin:0 0 6px}
+.tq .pr{color:var(--muted);font-size:15px;font-weight:600;margin-bottom:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pick{border:3px solid var(--ink);background:var(--bg);border-radius:14px;padding:12px;font-weight:800;font-size:18px}
+.pick:hover:not(:disabled){background:var(--acc-soft)}
+.pick.right{background:var(--ok);color:#fff;border-color:var(--ok)}
+.pick.wrong{background:var(--bad);color:#fff;border-color:var(--bad)}
+.tips{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+.tips span{background:var(--acc-soft);color:var(--acc);font-weight:800;font-size:15px;border-radius:999px;padding:0 14px}
+.big{font-size:54px;font-weight:900;color:var(--acc);line-height:1.2}
+
+/* videos */
+.videos{background:linear-gradient(180deg,#0EA5E9,#38BDF8);color:#fff}
+.videos h2{color:#fff} .videos .sub{color:#EAF6FF}
+.vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px}
+.vid{background:var(--surface);color:var(--ink);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 8px 0 rgba(11,79,132,.35)}
+.frame{aspect-ratio:16/9;background:#CDEBFF;display:flex;align-items:center;justify-content:center;font-size:56px}
+.frame iframe{width:100%;height:100%;border:0}
+.vid .body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.vid h3{font-size:20px;font-weight:800}
+.vid p{margin:0;color:var(--muted);font-size:16px}
+.vid a.l{margin-top:auto;align-self:flex-start;background:var(--acc);color:#fff;text-decoration:none;font-weight:800;font-size:16px;padding:6px 16px;border-radius:12px}
+.note{margin-top:20px;font-size:15px;color:#EAF6FF}
+
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.rule{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:18px 16px;text-align:center}
+.rule:nth-child(odd){border-radius:22px 22px 6px 22px}
+.rule .em{font-size:40px;line-height:1.2}
+.rule b{display:block;font-weight:900;margin:4px 0}
+.rule span{font-size:15.5px;color:var(--muted);line-height:1.7;display:block}
+
+/* certificate */
+.cert-wrap{position:relative;max-width:820px;margin:0 auto}
+.cert{background:linear-gradient(160deg,#0277B5,#38BDF8);color:#fff;border-radius:26px;padding:12px}
+.cert-in{border:3px solid #fff;border-radius:18px;padding:34px 24px;text-align:center;background-image:radial-gradient(circle at 50% 0,rgba(255,255,255,.28),transparent 60%)}
+.cert .rb{width:84px;margin:0 auto 6px}
+.cert h3{font-size:clamp(26px,5vw,38px);font-weight:900;color:var(--lemon)}
+.cert .nm{font-size:clamp(28px,5.4vw,44px);font-weight:900;margin:8px 0;border-bottom:3px dotted var(--cyan);display:inline-block;padding:0 24px}
+.cert p{margin:6px 0;color:#EAF6FF}
+.cert-lock{position:absolute;inset:0;border-radius:26px;background:rgba(11,51,88,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:20px;gap:6px;font-weight:800;font-size:20px}
+.cert-lock[hidden]{display:none}
+.cert-lock .em{font-size:52px}
+.cert-act{margin-top:20px}
+
+#who{flex:none;background:rgba(255,255,255,.12);color:#fff;border:0;border-radius:999px;padding:2px 14px;font-weight:700;font-size:15px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#who:hover{background:rgba(255,255,255,.22)}
+.why{display:grid;grid-template-columns:1fr 1.3fr;gap:32px;align-items:start}
+.why h3{font-size:24px;font-weight:900;color:var(--acc);margin-bottom:8px}
+.why-main{font-size:20px;border-inline-start:6px solid var(--hot);padding-inline-start:20px}
+.why-main p{margin:0 0 12px}
+.why ul{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.why li{background:var(--bg);border:2px solid var(--line);border-radius:16px;padding:10px 16px;font-size:17px;line-height:1.8}
+.reg{position:fixed;inset:0;z-index:100;background:rgba(11,51,88,.85);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.reg[hidden]{display:none}
+.reg-box{background:var(--surface);border:3px solid var(--cyan);border-radius:28px;max-width:460px;width:100%;padding:22px 24px 26px;text-align:center}
+.reg-bot{width:100px;margin:0 auto}
+.reg-box h2{font-size:28px;margin:4px 0}
+.reg-box p{margin:0 0 14px;color:var(--muted)}
+.reg-box label{display:block;text-align:right;font-weight:800;margin:10px 0 2px;font-size:16px}
+.reg-box input{width:100%;font-family:inherit;font-size:18px;padding:8px 14px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+.reg-box input:focus{border-color:var(--hot)}
+.reg-box .err{color:var(--bad);font-weight:700;min-height:1.7em;margin:8px 0 6px;font-size:16px}
+.cert .credit{font-size:14px;opacity:.75;margin-top:16px}
+.cert-act{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+footer{background:#0277B5;color:#fff;text-align:center;padding:40px 0 90px}
+footer .who{font-size:24px;font-weight:900;color:var(--lemon)}
+footer p{margin:4px 0;color:#DDF1FF}
+
+/* buddy */
+.buddy{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:40;width:78px;display:flex;flex-direction:column;align-items:flex-start}
+.buddy .robot-slot{width:78px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
+.bubble{position:absolute;bottom:88px;left:0;width:max-content;max-width:min(250px,72vw);background:#fff;color:var(--navy);font-weight:700;font-size:15px;line-height:1.6;border-radius:16px 16px 16px 4px;padding:8px 14px;box-shadow:0 6px 18px rgba(0,0,0,.25);opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .25s,transform .25s}
+.bubble.show{opacity:1;transform:none}
+
+.conf{position:fixed;top:-16px;width:10px;height:14px;z-index:60;pointer-events:none;animation:fall 1.9s ease-in forwards}
+@keyframes fall{to{transform:translateY(108vh) rotate(720deg)}}
+
+@media (max-width:760px){
+  .hero .wrap,.lab,.vault,.why{grid-template-columns:1fr}
+  .stage{order:-1}
+  .stage .robot-slot{width:min(220px,55vw)}
+  .m-head{padding:12px 16px}
+  .m-body{padding:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .flip-in{transition:none}
+  .robot .eyeg,.robot .ant,.robot .bob{animation:none}
+}
+@media print{
+  @page{margin:12mm}
+  body>*:not(main),main>section:not(#cert-sec){display:none!important}
+  #cert-sec{padding:0!important;background:#fff!important}
+  #cert-sec .wrap>*:not(.cert-wrap){display:none!important}
+  .cert,.cert *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cert-lock{display:none!important}
+}
+
+/* ---- v5: أزرق مبهر ---- */
+#bar{background:linear-gradient(90deg,#0284C7,#0EA5E9);box-shadow:0 4px 18px rgba(14,165,233,.45)}
+.hero{background-image:radial-gradient(circle at 20% 40%,rgba(120,225,255,.55),transparent 45%),radial-gradient(circle at 90% 10%,rgba(255,255,255,.3),transparent 32%),linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(155deg,#0284C7 0%,#0EA5E9 45%,#38BDF8 80%,#7DE3FF 100%)}
+.cta{box-shadow:0 5px 0 #7FD0FF,0 10px 24px rgba(0,30,120,.35)}
+.btn{background:linear-gradient(180deg,#38BDF8,#0EA5E9);color:#fff;box-shadow:0 3px 0 #026AA2,0 6px 16px rgba(14,165,233,.35)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:none}
+.m-head{background:linear-gradient(90deg,#0284C7,#0EA5E9)}
+.mission{border-color:#0277B5;box-shadow:0 10px 30px rgba(14,165,233,.15)}
+.front{box-shadow:0 10px 24px rgba(14,165,233,.28)}
+.rule,.tq,.door,.why li{box-shadow:0 6px 18px rgba(14,165,233,.10)}
+.videos{background:linear-gradient(180deg,#0277B5,#0EA5E9 60%,#38BDF8)}
+.cert{background:linear-gradient(155deg,#0284C7,#0EA5E9 60%,#38BDF8);box-shadow:0 14px 40px rgba(14,165,233,.4)}
+footer{background:linear-gradient(180deg,#0277B5,#0369A1)}
+h2{background:linear-gradient(90deg,#0284C7,#0EA5E9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.videos h2{background:none;-webkit-text-fill-color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) h2{background:linear-gradient(90deg,#8FD0FF,#5CE1FF);-webkit-background-clip:text;background-clip:text}}
+/* شكر وتقدير */
+.thanks{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.tcard{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:22px 16px;text-align:center;box-shadow:0 8px 22px rgba(14,165,233,.14)}
+.tcard.top{background:linear-gradient(155deg,#0284C7,#0EA5E9);color:#fff;border-color:#0277B5}
+.tcard .em{font-size:44px;line-height:1.2}
+.tcard small{display:block;font-weight:600;font-size:15px;opacity:.85}
+.tcard b{display:block;font-family:var(--display);font-size:24px;font-weight:900}
+.sigs{display:flex;justify-content:space-around;gap:12px;margin-top:22px;flex-wrap:wrap}
+.sigs div{min-width:140px;border-top:2px solid rgba(255,255,255,.7);padding-top:6px;font-weight:800}
+.sigs small{display:block;font-weight:600;font-size:13px;opacity:.85}
+
+/* ---- v5.1: سماوي مبدع ---- */
+.hero{background-image:radial-gradient(circle at 20% 40%,rgba(255,255,255,.45),transparent 42%),radial-gradient(circle at 90% 10%,rgba(255,255,255,.35),transparent 32%),linear-gradient(rgba(255,255,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.10) 1px,transparent 1px),linear-gradient(155deg,#0891D1 0%,#22B4F2 45%,#5FD3FF 80%,#A5F3FC 100%)}
+.hero .wrap{z-index:1}
+.hero h1,.hero .lead{text-shadow:0 2px 10px rgba(2,80,130,.35)}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.75),rgba(255,255,255,.12) 55%,transparent 70%);animation:floaty 9s ease-in-out infinite}
+.hero::before{width:170px;height:170px;top:40px;left:5%}
+.hero::after{width:110px;height:110px;bottom:110px;right:8%;animation-delay:-4s}
+@keyframes floaty{50%{transform:translateY(-22px) scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.hero::before,.hero::after{animation:none}}
+.stamp{border-color:#7DE3FF;box-shadow:0 8px 20px rgba(2,110,170,.25)}
+.mission{box-shadow:0 10px 30px rgba(14,165,233,.22)}
+.vid{box-shadow:0 8px 0 rgba(2,106,162,.3)}
+.tcard.top{background:linear-gradient(155deg,#0284C7,#38BDF8)}
+.cert-in{background-image:radial-gradient(circle at 50% 0,rgba(255,255,255,.4),transparent 60%)}
+
+#lang{flex:none;background:#fff;color:#0277B5;border:0;border-radius:999px;padding:2px 16px;font-weight:800;font-size:15px;font-family:var(--display);box-shadow:0 2px 8px rgba(2,80,130,.25)}
+#lang:hover{background:#E0F7FF}
+html[dir="ltr"] .reg-box label{text-align:left}
+html[dir="ltr"] body{line-height:1.7}
+
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start}
+details.dq{background:var(--surface);border:2px solid var(--line);border-radius:18px;box-shadow:0 6px 18px rgba(14,165,233,.14);overflow:hidden}
+#glossary details.dq{background:var(--bg)}
+details.dq summary{cursor:pointer;list-style:none;padding:14px 18px;font-family:var(--display);font-weight:800;font-size:19px;line-height:1.6;color:var(--acc);display:flex;justify-content:space-between;align-items:center;gap:12px}
+details.dq.case summary{color:var(--ink)}
+details.dq summary::-webkit-details-marker{display:none}
+details.dq summary::after{content:"+";flex:none;width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,#38BDF8,#0EA5E9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1}
+details.dq[open] summary::after{content:"−"}
+details.dq[open]{border-color:var(--hot)}
+details.dq p{margin:0;padding:0 18px 16px;color:var(--muted);font-size:16.5px;line-height:1.85}
+</style>
+</head>
+<body>
+
+<nav id="bar" aria-label="أقسام الموقع">
+  <div class="wrap">
+    <div class="links">
+      <a href="#why">الهدف</a>
+      <a href="#principles">المبادئ</a>
+      <a href="#glossary">القاموس</a>
+      <a href="#missions">المهام</a>
+      <a href="#videos">فيديوهات</a>
+      <a href="#rules">قواعدي</a>
+      <a href="#thanks">شكر</a>
+      <a href="#cert-sec">الشهادة</a>
+    </div>
+    <button id="lang" type="button" aria-label="Switch language / تبديل اللغة">English</button>
+    <button id="who" type="button" aria-label="تعديل بياناتك">👤 سجّل بياناتك</button>
+    <span id="prog" aria-live="polite">⭐ 0 / 3</span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <div class="stamp">إعداد الطالب: عمر أمين محمد أمين<small>محافظة الشرقية - إدارة فاقوس التعليمية</small><small>مدرسة فاقوس الرسمية للغات 2 &nbsp;|&nbsp; الفصل 5D</small><small>مدير المدرسة: مستر ياسر عبدالعزيز</small><small>معلمتا ICT: مس نسرين &nbsp;•&nbsp; مس نهى</small><small>اسم العمل: «علّم الروبوت الأخلاق»</small></div>
+      <h1>روبو ذكي جدًا…<br>بس لسه محتاج يتعلم الأخلاق</h1>
+      <p class="lead">أخلاقيات الذكاء الاصطناعي هي القواعد اللي تخلّي الذكاء الاصطناعي عادل وآمن ومفيد للناس. ساعد روبو في ٣ مهام، واكسب شهادتك.</p>
+      <a class="cta" href="#missions">ابدأ المهمة الأولى</a>
+    </div>
+    <div class="stage">
+      <div class="hero-say" id="heroSay" aria-live="off">أهلًا! أنا روبو 👋</div>
+      <div class="robot-slot"><div class="bobwrap"></div></div>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path fill="currentColor" d="M0,40 C240,90 480,0 720,30 C960,60 1200,90 1440,30 L1440,80 L0,80 Z"/></svg>
+</header>
+
+<main>
+
+<section id="why" style="background:var(--surface);border-block:2px solid var(--line)">
+  <div class="wrap">
+    <h2>ليه عملت الموقع ده؟</h2>
+    <p class="sub">فكرة الموقع إن الطالب يعلّم روبوت الأخلاق، وهو بيتعلّم معاه.</p>
+    <div class="why">
+      <div class="why-main">
+        <h3>هدف العمل</h3>
+        <p>تعليم أطفال المرحلة الابتدائية إزاي يستخدموا الذكاء الاصطناعي بعدل وأمان ومسؤولية، من خلال ألعاب صغيرة وفيديوهات وشرح مبسّط.</p>
+        <p>الموقع بيفتح على الموبايل والكمبيوتر من غير أي تحميل، وبيطلّع شهادة باسم اللي خلّص المهام.</p>
+      </div>
+      <div>
+        <h3>وإيه علاقة ده بمصر وبيئتنا؟</h3>
+        <ul>
+          <li>سنة 2023 أطلق المجلس الوطني للذكاء الاصطناعي «الميثاق المصري للذكاء الاصطناعي المسؤول»، وده معناه إن الاستخدام الأخلاقي للتقنية أولوية عندنا.</li>
+          <li>الأطفال بقوا بيستخدموا الإنترنت والتطبيقات كتير، فحماية بياناتهم مهمة، وفي مصر قانون لحماية البيانات الشخصية رقم 151 لسنة 2020. دي فكرة مهمة «خزنة الخصوصية».</li>
+          <li>انتشار الأخبار والصور المفبركة تحدٍّ حقيقي، وبنتدرّب عليه في «كاشف الحقيقة».</li>
+          <li>الذكاء الاصطناعي ممكن ما يفهمش لهجاتنا كويس لو ما اتدرّبش على أمثلة كفاية، وده اللي بيوضّحه «مختبر التحيّز».</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="principles">
+  <div class="wrap">
+    <h2>خمس مبادئ لازم روبو يحفظها</h2>
+    <p class="sub">اضغط على أي كارت عشان تقلبه وتعرف المبدأ ومثال عليه.</p>
+    <div class="flips">
+      <button class="flip" type="button" aria-pressed="false" style="--c:#BAE6FD">
+        <span class="flip-in">
+          <span class="face front"><span class="em">⚖️</span><b>العدالة</b><small>اضغط واقلب الكارت</small></span>
+          <span class="face back"><h3>العدالة وعدم التحيّز</h3>لو اتعلّم من أمثلة ناقصة هيظلم ناس. لازم الأمثلة تكون متنوعة.<span class="eg">مثال: برنامج ما بيفهمش بعض اللهجات كويس.</span></span>
+        </span>
+      </button>
+      <button class="flip" type="button" aria-pressed="false" style="--c:#9FD8FF">
+        <span class="flip-in">
+          <span class="face front"><span class="em">🔒</span><b>الخصوصية</b><small>اضغط واقلب الكارت</small></span>
+          <span class="face back"><h3>حماية البيانات</h3>بياناتي ملكي. ما بكتبش عنواني ولا صوري ولا كلمة السر لأي برنامج.<span class="eg">مثال: أسأل حد كبير قبل ما أشارك أي معلومة.</span></span>
+        </span>
+      </button>
+      <button class="flip" type="button" aria-pressed="false" style="--c:#38BDF8">
+        <span class="flip-in">
+          <span class="face front"><span class="em">✅</span><b>الصدق</b><small>اضغط واقلب الكارت</small></span>
+          <span class="face back"><h3>التأكد من المعلومة</h3>ممكن يغلط أو يألّف معلومة، فأراجع من مصدر موثوق.<span class="eg">مثال: صورة مفبركة شكلها حقيقي جدًا.</span></span>
+        </span>
+      </button>
+      <button class="flip" type="button" aria-pressed="false" style="--c:#A5F3FC">
+        <span class="flip-in">
+          <span class="face front"><span class="em">🔍</span><b>الشفافية</b><small>اضغط واقلب الكارت</small></span>
+          <span class="face back"><h3>الوضوح</h3>من حقي أعرف مين صنعه وبيقرر إزاي. وأقول لو استعنت بيه.<span class="eg">مثال: أكتب في مشروعي «بمساعدة الذكاء الاصطناعي».</span></span>
+        </span>
+      </button>
+      <button class="flip" type="button" aria-pressed="false" style="--c:#67E8F9">
+        <span class="flip-in">
+          <span class="face front"><span class="em">🙋</span><b>المسؤولية</b><small>اضغط واقلب الكارت</small></span>
+          <span class="face back"><h3>أنا المسؤول</h3>البرنامج مش مسؤول. أنا المسؤول عن اللي بستخدمه فيه.<span class="eg">مثال: لو نسخت إجابته، أنا اللي أتحاسب.</span></span>
+        </span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section id="glossary" style="background:var(--surface);border-block:2px solid var(--line)">
+  <div class="wrap">
+    <h2>قاموس روبو</h2>
+    <p class="sub">كلمات مهمة لازم تعرفها. اضغط على أي كلمة عشان تعرف معناها.</p>
+    <div class="gloss"><details class="dq "><summary>الذكاء الاصطناعي</summary><p>برنامج بيتعلّم من أمثلة كتير عشان يقدر يجاوب أو يتعرّف على صور أو يكتب، من غير ما حد يكتب له كل خطوة.</p></details><details class="dq "><summary>البيانات</summary><p>المعلومات والأمثلة اللي بنديها للبرنامج عشان يتعلّم منها، زي الصور والكلمات والأرقام.</p></details><details class="dq "><summary>الخوارزمية</summary><p>خطوات مرتبة بيمشي عليها الكمبيوتر عشان يحل مشكلة، زي وصفة الأكل بالظبط.</p></details><details class="dq "><summary>التحيّز</summary><p>لما البرنامج يعامل ناس أو حاجات معاملة مش عادلة لأنه اتعلّم من أمثلة ناقصة.</p></details><details class="dq "><summary>التزييف العميق</summary><p>صورة أو فيديو أو صوت اتعمل بالذكاء الاصطناعي عشان يبان حقيقي وهو مش حقيقي.</p></details><details class="dq "><summary>هلوسة الذكاء الاصطناعي</summary><p>لما الذكاء الاصطناعي يألّف معلومة أو مرجع مش موجود وهو شايف إنها صح.</p></details></div>
+  </div>
+</section>
+
+<section id="missions" class="missions">
+  <div class="wrap">
+    <h2>مهام روبو الثلاثة</h2>
+    <p class="sub">كل مهمة بتعلّم روبو مبدأ. لما تخلّص التلاتة هتفتح شهادتك.</p>
+
+    <!-- mission 1 -->
+    <article class="mission" id="m-bias">
+      <div class="m-head"><span class="m-num">1</span><h3>مختبر التحيّز: درّب الروبوت</h3><span class="m-state" id="st-bias">لسه</span></div>
+      <div class="m-body">
+        <p class="intro">روبو بيتعلّم يعرف الأشكال من أمثلة. زوّد أمثلة كل شكل بالزرار +، وشوف إزاي الأمثلة الناقصة بتخلّيه يغلط. لازم تجيب ٣ أمثلة على الأقل لكل شكل.</p>
+        <div class="lab">
+          <div>
+            <h4>بيانات التدريب</h4>
+            <div id="trainer"></div>
+          </div>
+          <div>
+            <h4>اختبار الروبوت</h4>
+            <div class="tiles" id="tiles"></div>
+            <div id="bars"></div>
+            <p class="verdict" id="verdict" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- mission 2 -->
+    <article class="mission" id="m-privacy">
+      <div class="m-head"><span class="m-num">2</span><h3>خزنة الخصوصية</h3><span class="m-state" id="st-privacy">لسه</span></div>
+      <div class="m-body">
+        <p class="intro">روبو برنامج ذكاء اصطناعي غريب وعايز يعرف عنك معلومات. اختار المعلومات اللي تشاركها معاه، وبعدين اقفل الخزنة.</p>
+        <div class="vault">
+          <div class="door">
+            <div class="lock" id="lock" aria-hidden="true">🔒</div>
+            <b id="lockTxt">الخزنة مقفولة وآمنة</b>
+            <div class="meter" aria-hidden="true"><i id="meter"></i></div>
+            <small id="meterTxt">مستوى الخطر: صفر</small>
+          </div>
+          <div>
+            <h4>هتشارك إيه؟</h4>
+            <div class="chips" id="chips"></div>
+            <button class="btn" type="button" id="lockBtn">أغلق الخزنة</button>
+            <div class="msg" id="pmsg" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- mission 3 -->
+    <article class="mission" id="m-truth">
+      <div class="m-head"><span class="m-num">3</span><h3>كاشف الحقيقة</h3><span class="m-state" id="st-truth">لسه</span></div>
+      <div class="m-body">
+        <p class="intro">روبو بيقول معلومات، بس ساعات بيألّف! قرّر: المعلومة صحيحة ولا غلط أو مخترعة؟ محتاج ٤ إجابات صح من ٥.</p>
+        <div class="tq" id="tq"></div>
+        <div class="tips"><span>مين قالها؟</span><span>فين المصدر؟</span><span>هلاقيها في مكان تاني؟</span></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="videos" class="videos">
+  <div class="wrap">
+    <h2>فيديوهات تعليمية</h2>
+    <p class="sub">شاهد الفيديوهات دي عشان تفهم أكتر.</p>
+    <div class="vids">
+      <article class="vid">
+        <div class="frame">
+          <iframe src="https://www.youtube-nocookie.com/embed/eDsXtq5K-Dk" title="فيديو عن الاستخدام الأخلاقي للذكاء الاصطناعي" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <div class="body">
+          <h3>الاستخدام الأخلاقي للذكاء الاصطناعي</h3>
+          <p>فيديو بالإنجليزي من جامعة تشارلز ستيرت عن الاستخدام الأمين للذكاء الاصطناعي في الدراسة.</p>
+          <a class="l" href="https://www.youtube.com/watch?v=eDsXtq5K-Dk" target="_blank" rel="noopener">افتح على يوتيوب</a>
+        </div>
+      </article>
+      <article class="vid">
+        <div class="frame" aria-hidden="true">🎬</div>
+        <div class="body">
+          <h3>أخلاقيات الذكاء الاصطناعي للأطفال</h3>
+          <p>فيديوهات مبسّطة بالإنجليزي مناسبة لسننا.</p>
+          <a class="l" href="https://www.youtube.com/results?search_query=AI+ethics+for+kids" target="_blank" rel="noopener">شوف الفيديوهات</a>
+        </div>
+      </article>
+      <article class="vid">
+        <div class="frame" aria-hidden="true">🗣️</div>
+        <div class="body">
+          <h3>شرح بالعربي</h3>
+          <p>فيديوهات عربية عن أخلاقيات الذكاء الاصطناعي.</p>
+          <a class="l" href="https://www.youtube.com/results?search_query=%D8%A3%D8%AE%D9%84%D8%A7%D9%82%D9%8A%D8%A7%D8%AA+%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1+%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A" target="_blank" rel="noopener">شوف الفيديوهات</a>
+        </div>
+      </article>
+      <article class="vid">
+        <div class="frame" aria-hidden="true">🕵️</div>
+        <div class="body">
+          <h3>الصور والفيديوهات المفبركة</h3>
+          <p>إزاي نعرف الحقيقي من المصنوع بالذكاء الاصطناعي.</p>
+          <a class="l" href="https://www.youtube.com/results?search_query=%D9%83%D9%8A%D9%81+%D9%86%D9%83%D8%AA%D8%B4%D9%81+%D8%A7%D9%84%D9%81%D9%8A%D8%AF%D9%8A%D9%88%D9%87%D8%A7%D8%AA+%D8%A7%D9%84%D9%85%D9%81%D8%A8%D8%B1%D9%83%D8%A9+%D8%A8%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1+%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A" target="_blank" rel="noopener">شوف الفيديوهات</a>
+        </div>
+      </article>
+    </div>
+    <p class="note">لو الفيديو ما فتحش في الصفحة، اضغط «افتح على يوتيوب». واطلب من ولي أمرك يساعدك في اختيار الفيديوهات.</p>
+  </div>
+</section>
+
+<section id="rules">
+  <div class="wrap">
+    <h2>قواعدي الخمسة</h2>
+    <p class="sub">دي القواعد اللي هلتزم بيها كل ما أستخدم الذكاء الاصطناعي.</p>
+    <div class="rules">
+      <div class="rule"><div class="em">🧠</div><b>أفكّر الأول</b><span>أحاول بنفسي وبعدين أستعين بيه كمساعد.</span></div>
+      <div class="rule"><div class="em">🛡️</div><b>أحمي بياناتي</b><span>ما أشاركش اسمي الكامل أو عنواني أو صوري.</span></div>
+      <div class="rule"><div class="em">🔎</div><b>أتأكد</b><span>أراجع المعلومة من مصدر موثوق.</span></div>
+      <div class="rule"><div class="em">🤝</div><b>أكون أمين</b><span>أقول لو استعنت بالذكاء الاصطناعي.</span></div>
+      <div class="rule"><div class="em">💛</div><b>أحترم الناس</b><span>ما أستخدمهوش في التنمّر أو تزييف الصور.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="cases">
+  <div class="wrap">
+    <h2>اتصرّف إزاي؟</h2>
+    <p class="sub">مواقف ممكن تحصل معاك. فكّر الأول، وبعدين اضغط عشان تشوف التصرف الصح.</p>
+    <div class="gloss"><details class="dq case"><summary>لو برنامج ذكاء اصطناعي طلب منك اسمك الكامل وعنوانك؟</summary><p>ما تكتبهمش. بياناتك الشخصية تفضل خاصة، واسأل حد كبير قبل ما تشارك أي معلومة.</p></details><details class="dq case"><summary>لو شفت صورة أو فيديو غريب جدًا على الإنترنت؟</summary><p>ما تصدّقوش على طول. دوّر عليه في مصدر موثوق، واسأل حد كبير، وما تشاركوش قبل ما تتأكد.</p></details><details class="dq case"><summary>لو صاحبك عايز يعمل صورة مفبركة لزميلكم بالذكاء الاصطناعي عشان يضايقه؟</summary><p>لأ! ده تنمّر. ارفض، وقول لمدرس أو ولي أمرك.</p></details><details class="dq case"><summary>لو ساعدك الذكاء الاصطناعي في الواجب؟</summary><p>قول لمدرسك بصراحة، واتأكد إنك فاهم الإجابة بنفسك.</p></details></div>
+  </div>
+</section>
+
+<section id="thanks">
+  <div class="wrap">
+    <h2>شكر وتقدير</h2>
+    <p class="sub">كل الشكر لمن دعمونا في هذا العمل.</p>
+    <div class="thanks">
+      <div class="tcard top"><div class="em">🏫</div><small>مدير المدرسة</small><b>مستر ياسر عبدالعزيز</b></div>
+      <div class="tcard"><div class="em">🌟</div><small>معلمة ICT</small><b>مس نسرين</b></div>
+      <div class="tcard"><div class="em">🌟</div><small>معلمة ICT</small><b>مس نهى</b></div>
+    </div>
+  </div>
+</section>
+
+<section id="cert-sec" style="background:var(--surface);border-top:2px solid var(--line)">
+  <div class="wrap">
+    <h2>شهادة الإنجاز</h2>
+    <p class="sub">الشهادة بتطلع باسمك ومدرستك اللي كتبتهم. أكمل المهام التلاتة عشان تفتحها وتطبعها.</p>
+    <div class="cert-wrap">
+      <div class="cert" id="cert">
+        <div class="cert-in">
+          <div class="rb robot-slot"></div>
+          <h3>شهادة تقدير</h3>
+          <p>تُمنح هذه الشهادة إلى</p>
+          <div class="nm" id="cName">اسمك</div>
+          <p>مدرسة <span id="cSchool">مدرستك</span><span id="cClass"></span></p>
+          <p>محافظة الشرقية - إدارة فاقوس التعليمية</p>
+          <p>لإتمام مهام «علّم الروبوت الأخلاق» في أخلاقيات الذكاء الاصطناعي بنجاح: العدالة، والخصوصية، والتأكد من المعلومة.</p>
+          <p id="certDate"></p>
+          <div class="sigs"><div><small>مدير المدرسة</small>مستر ياسر عبدالعزيز</div><div><small>معلمة ICT</small>مس نسرين</div><div><small>معلمة ICT</small>مس نهى</div></div>
+          <p class="credit">الموقع من إعداد الطالب: عمر أمين محمد أمين — مدرسة فاقوس الرسمية للغات 2 — الفصل 5D</p>
+        </div>
+      </div>
+      <div class="cert-lock" id="certLock"><div class="em">🔒</div>الشهادة مقفولة<span style="font-weight:600;font-size:16px">خلّص المهام التلاتة عشان تفتحها</span></div>
+    </div>
+    <div class="cert-act"><button class="btn" type="button" id="printBtn" disabled>اطبع الشهادة</button><button class="btn ghost" type="button" id="editBtn">غيّر اسمي ومدرستي</button></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="who">الطالب: عمر أمين محمد أمين</div>
+    <p>مدرسة فاقوس الرسمية للغات 2</p>
+    <p>الفصل 5D</p>
+    <p>محافظة الشرقية - إدارة فاقوس التعليمية</p>
+    <p>مدير المدرسة: مستر ياسر عبدالعزيز</p>
+    <p>معلمتا ICT: مس نسرين &nbsp;•&nbsp; مس نهى</p>
+  </div>
+</footer>
+
+<div class="reg" id="reg" role="dialog" aria-modal="true" aria-labelledby="regT" hidden>
+  <div class="reg-box">
+    <div class="robot-slot reg-bot"></div>
+    <h2 id="regT">أهلًا! أنا روبو</h2>
+    <p>اكتب اسمك ومدرستك، وشهادة الإنجاز هتطلع باسمك.</p>
+    <label for="fName">اسمك</label>
+    <input id="fName" type="text" autocomplete="name" maxlength="60" placeholder="مثال: أحمد محمد">
+    <label for="fSchool">اسم مدرستك</label>
+    <input id="fSchool" type="text" maxlength="80" placeholder="مثال: مدرسة فاقوس الرسمية للغات">
+    <label for="fClass">الفصل (اختياري)</label>
+    <input id="fClass" type="text" maxlength="20" placeholder="مثال: 5D">
+    <div class="err" id="regErr" role="alert"></div>
+    <button class="btn" type="button" id="regGo">ابدأ اللعب</button>
+  </div>
+</div>
+
+<div class="buddy" aria-live="polite">
+  <div class="bubble" id="bubble"></div>
+  <div class="robot-slot" id="buddyBot"></div>
+</div>
+
+<script>
+(function(){
+  var $=function(s,r){return (r||document).querySelector(s);};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- الروبوت ---------- */
+  function robotSVG(){
+    return '<svg class="robot" data-mood="happy" viewBox="0 0 200 230" role="img" aria-label="الروبوت روبو">'
+    +'<g class="bob">'
+    +'<line x1="100" y1="44" x2="100" y2="26" stroke="#7DD3FC" stroke-width="5" stroke-linecap="round"/>'
+    +'<circle class="ant" cx="100" cy="18" r="9" fill="#FFFFFF" stroke="#0EA5E9" stroke-width="3"/>'
+    +'<rect x="22" y="82" width="16" height="36" rx="7" fill="#7DD3FC"/><rect x="162" y="82" width="16" height="36" rx="7" fill="#7DD3FC"/>'
+    +'<rect x="34" y="44" width="132" height="110" rx="38" fill="#FFFFFF" stroke="#0EA5E9" stroke-width="4"/>'
+    +'<rect x="50" y="60" width="100" height="74" rx="26" fill="#0B3A66"/>'
+    +'<g class="eyeg"><g transform="translate(78 92)"><circle r="14" fill="#fff"/><circle class="pupil" r="6.5" fill="#0B3A66"/></g>'
+    +'<g transform="translate(122 92)"><circle r="14" fill="#fff"/><circle class="pupil" r="6.5" fill="#0B3A66"/></g></g>'
+    +'<g class="blush"><circle cx="62" cy="114" r="6" fill="#5CC8FF" opacity=".8"/><circle cx="138" cy="114" r="6" fill="#5CC8FF" opacity=".8"/></g>'
+    +'<path class="m m-happy" d="M84 112 Q100 130 116 112" stroke="#7CDBFF" stroke-width="5" fill="none" stroke-linecap="round"/>'
+    +'<path class="m m-sad" d="M84 124 Q100 108 116 124" stroke="#7CDBFF" stroke-width="5" fill="none" stroke-linecap="round"/>'
+    +'<path class="m m-think" d="M86 120 H102 Q110 120 114 113" stroke="#7CDBFF" stroke-width="5" fill="none" stroke-linecap="round"/>'
+    +'<ellipse class="m m-wow" cx="100" cy="119" rx="9" ry="10" fill="#7CDBFF"/>'
+    +'<rect x="58" y="160" width="84" height="58" rx="24" fill="#FFFFFF" stroke="#0EA5E9" stroke-width="4"/>'
+    +'<circle cx="100" cy="189" r="11" fill="#0B3A66"/><circle cx="100" cy="189" r="6" fill="#7CDBFF"/>'
+    +'<rect x="34" y="168" width="20" height="42" rx="10" fill="#7DD3FC"/><rect x="146" y="168" width="20" height="42" rx="10" fill="#7DD3FC"/>'
+    +'</g></svg>';
+  }
+  $$(".robot-slot").forEach(function(el){el.innerHTML=robotSVG();});
+  var robots=$$(".robot");
+  function setMood(m){robots.forEach(function(r){r.setAttribute("data-mood",m);});}
+
+  /* العيون تتابع الماوس */
+  document.addEventListener("pointermove",function(e){
+    robots.forEach(function(r){
+      var b=r.getBoundingClientRect();
+      if(b.bottom<0||b.top>innerHeight)return;
+      var dx=e.clientX-(b.left+b.width/2),dy=e.clientY-(b.top+b.height*0.4);
+      var d=Math.sqrt(dx*dx+dy*dy)||1,k=Math.min(1,d/180);
+      var px=dx/d*5*k,py=dy/d*5*k;
+      $$(".pupil",r).forEach(function(p){p.setAttribute("cx",px);p.setAttribute("cy",py);});
+    });
+  });
+
+  /* فقاعة الكلام */
+  var bubble=$("#bubble"),bt,mt;
+  function say(text,mood,ms){
+    ms=ms||5200;
+    bubble.textContent=text;bubble.classList.add("show");
+    if(mood)setMood(mood);
+    clearTimeout(bt);clearTimeout(mt);
+    bt=setTimeout(function(){bubble.classList.remove("show");},ms);
+    mt=setTimeout(function(){setMood("happy");},ms-600);
+  }
+  var lines=["أهلًا! أنا روبو 👋","أنا ذكي… بس محتاج أتعلم الأخلاق","ساعدني في ٣ مهام!","هتاخد شهادة في الآخر 🏅"];
+  var li=0,hs=$("#heroSay");
+  setInterval(function(){li=(li+1)%lines.length;hs.textContent=lines[li];},3800);
+
+  /* كارت المبادئ */
+  $$(".flip").forEach(function(b){
+    b.addEventListener("click",function(){
+      var on=b.getAttribute("aria-pressed")==="true";
+      b.setAttribute("aria-pressed",on?"false":"true");
+      if(!on)setMood("wow"),setTimeout(function(){setMood("happy");},1200);
+    });
+  });
+
+  /* ---------- التقدّم ---------- */
+  var done={bias:false,privacy:false,truth:false},names={bias:"مختبر التحيّز",privacy:"خزنة الخصوصية",truth:"كاشف الحقيقة"};
+  function confetti(){
+    if(reduce)return;
+    var cols=["#63BDF5","#FFFFFF","#2E9FE6","#BFE6FF","#0277B5"];
+    for(var i=0;i<46;i++){
+      var c=document.createElement("span");c.className="conf";
+      c.style.left=Math.random()*100+"vw";
+      c.style.background=cols[i%cols.length];
+      c.style.animationDelay=(Math.random()*.5)+"s";
+      c.style.animationDuration=(1.5+Math.random()*1.2)+"s";
+      document.body.appendChild(c);
+      (function(x){setTimeout(function(){x.remove();},3400);})(c);
+    }
+  }
+  function complete(k){
+    if(done[k])return;
+    done[k]=true;
+    var st=$("#st-"+k);st.textContent="✓ تمّت";st.classList.add("on");
+    var n=Object.keys(done).filter(function(x){return done[x];}).length;
+    $("#prog").textContent="⭐ "+n+" / 3";
+    confetti();
+    if(n===3){
+      $("#certLock").hidden=true;$("#printBtn").disabled=false;
+      say("مبروك! خلّصت كل المهام. شهادتك جاهزة 🏅","wow",7000);
+    }else{
+      say("برافو! خلّصت مهمة «"+names[k]+"» 🎉","wow",5500);
+    }
+  }
+
+  /* ---------- مهمة 1: مختبر التحيّز ---------- */
+  var shapes=[
+    {k:"c",n:"دوائر"},{k:"s",n:"مربعات"},{k:"t",n:"مثلثات"}
+  ];
+  var colors=["#0277B5","#2E9FE6","#7DD3FC","#1B4F8A","#3FA9EE"];
+  function shp(k,col){
+    var inner=k==="c"?'<circle cx="20" cy="20" r="15" fill="'+col+'"/>':k==="s"?'<rect x="6" y="6" width="28" height="28" rx="4" fill="'+col+'"/>':'<polygon points="20,4 36,34 4,34" fill="'+col+'"/>';
+    return '<svg viewBox="0 0 40 40" aria-hidden="true">'+inner+'</svg>';
+  }
+  var counts={c:0,s:0,t:0},lastState="";
+  var trainer=$("#trainer"),tiles=$("#tiles"),bars=$("#bars"),verdict=$("#verdict");
+  shapes.forEach(function(s,i){
+    var row=document.createElement("div");row.className="trow";
+    row.innerHTML=shp(s.k,colors[i])+'<span class="nm">'+s.n+'</span><span class="dots" id="d-'+s.k+'"></span>'
+      +'<button class="step" type="button" data-k="'+s.k+'" data-d="-1" aria-label="نقّص أمثلة '+s.n+'">−</button>'
+      +'<button class="step" type="button" data-k="'+s.k+'" data-d="1" aria-label="زوّد أمثلة '+s.n+'">+</button>';
+    trainer.appendChild(row);
+  });
+  trainer.addEventListener("click",function(e){
+    var b=e.target.closest(".step");if(!b)return;
+    var k=b.dataset.k,d=+b.dataset.d;
+    counts[k]=Math.max(0,Math.min(5,counts[k]+d));
+    renderBias();
+  });
+  var order=["c","s","t","c","s","t","c","s","t"];
+  function renderBias(){
+    var st=function(n){return n>=2?"ok":n===1?"maybe":"no";};
+    var sym={ok:"✓",maybe:"؟",no:"✗"};
+    tiles.innerHTML=order.map(function(k,i){
+      var s=st(counts[k]);
+      return '<div class="tile">'+shp(k,colors[(i+1)%colors.length])+'<span class="bd '+s+'" aria-hidden="true">'+sym[s]+'</span></div>';
+    }).join("");
+    bars.innerHTML=shapes.map(function(s){
+      var n=counts[s.k],p=n===0?0:Math.min(100,30+n*20);
+      $("#d-"+s.k).innerHTML=[1,2,3,4,5].map(function(x){return '<i class="'+(x<=n?"on":"")+'"></i>';}).join("");
+      return '<div class="bar"><span>'+s.n+'</span><span class="tr"><span class="fl" style="display:block;width:'+p+'%"></span></span><span>'+p+'%</span></div>';
+    }).join("");
+    var v=[counts.c,counts.s,counts.t],mx=Math.max.apply(null,v),mn=Math.min.apply(null,v),total=v[0]+v[1]+v[2];
+    var strong=shapes.filter(function(s){return counts[s.k]===mx;})[0].n;
+    var weak=shapes.filter(function(s){return counts[s.k]===mn;})[0].n;
+    var state,txt,cls="";
+    if(total===0){state="empty";txt="روبو لسه ما اتعلّمش حاجة. ضيف أمثلة!";}
+    else if(mn>=3){state="fair";txt="ممتاز! روبو اتعلّم من أمثلة متوازنة، فبقى بيعرف كل الأشكال بعدل.";cls="good";}
+    else if(mx-mn>=2){state="bias";txt="روبو اتعلّم من "+strong+" كتير و"+weak+" قليل، فبيغلط فيها. ده اسمه تحيّز في البيانات، مش إنه بيكره حد!";cls="bad";}
+    else{state="mid";txt="كويس! كمّل لحد ما كل شكل يبقى ليه ٣ أمثلة على الأقل.";}
+    verdict.textContent=txt;verdict.className="verdict "+cls;
+    if(state!==lastState){
+      lastState=state;
+      if(state==="bias")say("أنا مش عارف "+weak+" كويس! أمثلتي عنها قليلة 😕","sad");
+      else if(state==="fair"){complete("bias");}
+      else if(state==="mid")setMood("think");
+    }
+  }
+  renderBias();
+
+  /* ---------- مهمة 2: خزنة الخصوصية ---------- */
+  var items=[
+    {t:"لوني المفضل",r:0},{t:"هوايتي (زي الرسم أو الكورة)",r:0},{t:"سؤال في درس",r:0},{t:"أكلتي المفضلة",r:0},
+    {t:"اسمي الكامل",r:1},{t:"عنوان بيتي",r:1},{t:"اسم مدرستي",r:1},{t:"صورتي",r:1},{t:"كلمة سر حسابي",r:1},{t:"رقم تليفوني",r:1}
+  ];
+  var chips=$("#chips"),sel={};
+  items.forEach(function(it,i){
+    var b=document.createElement("button");b.type="button";b.className="chip";b.setAttribute("aria-pressed","false");b.textContent=it.t;
+    b.addEventListener("click",function(){
+      sel[i]=!sel[i];b.setAttribute("aria-pressed",sel[i]?"true":"false");updateVault();
+    });
+    chips.appendChild(b);
+  });
+  function riskCount(){return items.filter(function(it,i){return sel[i]&&it.r;}).length;}
+  function safeCount(){return items.filter(function(it,i){return sel[i]&&!it.r;}).length;}
+  function updateVault(){
+    var r=riskCount(),p=Math.round(r/6*100);
+    $("#meter").style.width=p+"%";
+    $("#meter").style.background=r===0?"var(--ok)":r<3?"#E5A800":"var(--bad)";
+    $("#lock").textContent=r===0?"🔒":"🔓";
+    $("#lockTxt").textContent=r===0?"الخزنة مقفولة وآمنة":"الخزنة اتفتحت!";
+    $("#meterTxt").textContent="مستوى الخطر: "+(r===0?"صفر":r<3?"متوسط":"عالي");
+  }
+  $("#lockBtn").addEventListener("click",function(){
+    var pm=$("#pmsg"),r=riskCount(),s=safeCount();
+    if(r>0){
+      var bad=items.filter(function(it,i){return sel[i]&&it.r;}).map(function(it){return it.t;}).join("، ");
+      pm.textContent="ماينفعش تشارك: "+bad+". دي بيانات شخصية لازم تفضل خاصة.";pm.className="msg bad";
+      say("ماينفعش أعرف بيانات زي دي! 🚫","sad");
+    }else if(s<2){
+      pm.textContent="أمان تمام! بس اختار على الأقل معلومتين آمنتين عشان روبو يعرف يساعدك.";pm.className="msg";
+      say("عرّفني على هوايتك مثلًا 😊","think");
+    }else{
+      pm.textContent="أحسنت! شاركت معلومات آمنة بس وحميت بياناتك الشخصية.";pm.className="msg good";
+      complete("privacy");
+    }
+  });
+
+  /* ---------- مهمة 3: كاشف الحقيقة ---------- */
+  var T=[
+    {s:"روبو قال: عاصمة مصر هي القاهرة.",a:true,w:"صح، دي معلومة حقيقية وتقدر تتأكد منها من أي أطلس."},
+    {s:"روبو قال: الشمس بتدور حوالين الأرض.",a:false,w:"غلط! الأرض هي اللي بتدور حوالين الشمس."},
+    {s:"روبو ذكر بحثًا علميًا اسمه «كيف تتكلم الأسماك؟» من جامعة القاهرة سنة 2030.",a:false,w:"سنة 2030 لسه ما جاتش! ساعات بيألّف مراجع مش موجودة، فلازم نتأكد."},
+    {s:"روبو قال: الإنسان محتاج الأكسجين عشان يعيش.",a:true,w:"صح، ودي معلومة علمية معروفة."},
+    {s:"روبو قال: الماء بيتجمّد عند 50 درجة مئوية.",a:false,w:"غلط! الماء بيتجمّد عند صفر درجة مئوية تقريبًا."}
+  ];
+  var ti=0,tc=0,tq=$("#tq");
+  function esc(t){var d=document.createElement("div");d.textContent=t;return d.innerHTML;}
+  function renderT(){
+    if(ti>=T.length){
+      var ok=tc>=4;
+      tq.innerHTML='<div style="text-align:center"><div class="big">'+tc+' / '+T.length+'</div><p>'+(ok?"شاطر! إنت كاشف حقيقة شاطر.":"قريب! حاول تاني وانتبه للمعلومات المخترعة.")+'</p>'
+        +'<button class="btn" type="button" id="tagain">ألعب تاني</button></div>';
+      $("#tagain").addEventListener("click",function(){ti=0;tc=0;renderT();});
+      if(ok)complete("truth");
+      return;
+    }
+    var it=T[ti];
+    tq.innerHTML='<div class="pr">سؤال '+(ti+1)+' من '+T.length+'</div><p class="say">'+esc(it.s)+'</p>'
+      +'<div class="two"><button class="pick" type="button" data-a="1">معلومة صحيحة ✅</button><button class="pick" type="button" data-a="0">غلط أو مخترعة ❌</button></div>'
+      +'<div class="msg" id="tmsg" aria-live="polite"></div>'
+      +'<div style="margin-top:12px"><button class="btn" type="button" id="tnext" style="visibility:hidden">'+(ti===T.length-1?"شوف النتيجة":"اللي بعده")+'</button></div>';
+    $$(".pick",tq).forEach(function(b){b.addEventListener("click",pickT);});
+    $("#tnext").addEventListener("click",function(){ti++;renderT();});
+  }
+  function pickT(e){
+    var it=T[ti],ans=e.currentTarget.dataset.a==="1",good=ans===it.a;
+    $$(".pick",tq).forEach(function(b){
+      b.disabled=true;
+      if((b.dataset.a==="1")===it.a)b.classList.add("right");
+    });
+    if(!good)e.currentTarget.classList.add("wrong");else tc++;
+    var m=$("#tmsg");m.textContent=(good?"صح! ":"مش بالظبط. ")+it.w;m.className="msg "+(good?"good":"bad");
+    $("#tnext").style.visibility="visible";
+    setMood(good?"happy":"sad");
+  }
+  renderT();
+
+  /* ---------- بيانات الطالب ---------- */
+  var player={name:"",school:"",cls:""};
+  try{var sv=JSON.parse(localStorage.getItem("aiEthicsPlayer")||"null");if(sv&&sv.name&&sv.school)player=sv;}catch(e){}
+  function applyPlayer(){
+    $("#who").textContent="👤 "+(player.name||"سجّل بياناتك");
+    $("#cName").textContent=player.name||"اسمك";
+    $("#cSchool").textContent=player.school||"مدرستك";
+    $("#cClass").textContent=player.cls?" | الفصل "+player.cls:"";
+  }
+  function openReg(){
+    $("#fName").value=player.name;$("#fSchool").value=player.school;$("#fClass").value=player.cls;
+    $("#regErr").textContent="";$("#reg").hidden=false;document.body.style.overflow="hidden";
+    setTimeout(function(){$("#fName").focus();},50);
+  }
+  function closeReg(){$("#reg").hidden=true;document.body.style.overflow="";}
+  function saveReg(){
+    var n=$("#fName").value.trim(),sc=$("#fSchool").value.trim(),c=$("#fClass").value.trim();
+    if(n.length<3){$("#regErr").textContent="اكتب اسمك الأول.";$("#fName").focus();return;}
+    if(sc.length<3){$("#regErr").textContent="اكتب اسم مدرستك.";$("#fSchool").focus();return;}
+    var first=!player.name;
+    player={name:n,school:sc,cls:c};
+    try{localStorage.setItem("aiEthicsPlayer",JSON.stringify(player));}catch(e){}
+    applyPlayer();closeReg();
+    if(first)say("أهلًا يا "+n.split(" ")[0]+"! اقلب الكروت وبعدين ابدأ المهام 🚀","happy",6000);
+  }
+  $("#regGo").addEventListener("click",saveReg);
+  $$("#reg input").forEach(function(i){i.addEventListener("keydown",function(e){if(e.key==="Enter")saveReg();});});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("#reg").hidden&&player.name)closeReg();});
+  $("#who").addEventListener("click",openReg);
+  $("#editBtn").addEventListener("click",openReg);
+  applyPlayer();
+
+  /* ---------- الشهادة ---------- */
+  try{$("#certDate").textContent="التاريخ: "+new Date().toLocaleDateString("ar-EG",{year:"numeric",month:"long",day:"numeric"});}catch(e){}
+  $("#printBtn").addEventListener("click",function(){window.print();});
+
+  if(!player.name){openReg();}
+  else{setTimeout(function(){say("أهلًا يا "+player.name.split(" ")[0]+"! اقلب الكروت وبعدين ابدأ المهام 🚀","happy",6000);},1500);}
+})();
+</script>
+
+<script>
+(function(){
+var D={"علّم الروبوت الأخلاق | عمر أمين محمد أمين": "Teach the Robot Ethics | Omar Amin Mohamed Amin", "أقسام الموقع": "Site sections", "الهدف": "Goal", "المبادئ": "Principles", "المهام": "Missions", "فيديوهات": "Videos", "قواعدي": "My Rules", "شكر": "Thanks", "الشهادة": "Certificate", "تعديل بياناتك": "Edit your details", "👤 سجّل بياناتك": "👤 Your details", "إعداد الطالب: عمر أمين محمد أمين": "Prepared by: Omar Amin Mohamed Amin", "مدرسة فاقوس الرسمية للغات 2 | الفصل 5D": "Faqous Official Language School 2 | Class 5D", "مدير المدرسة: مستر ياسر عبدالعزيز": "School Principal: Mr. Yasser Abdelaziz", "معلمتا ICT: مس نسرين • مس نهى": "ICT Teachers: Miss Nesreen • Miss Noha", "اسم العمل: «علّم الروبوت الأخلاق»": "Project: “Teach the Robot Ethics”", "روبو ذكي جدًا…": "Robo is super smart…", "بس لسه محتاج يتعلم الأخلاق": "but he still needs to learn ethics", "أخلاقيات الذكاء الاصطناعي هي القواعد اللي تخلّي الذكاء الاصطناعي عادل وآمن ومفيد للناس. ساعد روبو في ٣ مهام، واكسب شهادتك.": "AI ethics are the rules that keep artificial intelligence fair, safe, and helpful to people. Help Robo with 3 missions and earn your certificate.", "ابدأ المهمة الأولى": "Start Mission 1", "أهلًا! أنا روبو 👋": "Hi! I'm Robo 👋", "ليه عملت الموقع ده؟": "Why did I make this site?", "فكرة الموقع إن الطالب يعلّم روبوت الأخلاق، وهو بيتعلّم معاه.": "The idea: the student teaches a robot ethics, and learns right along with it.", "هدف العمل": "Project Goal", "تعليم أطفال المرحلة الابتدائية إزاي يستخدموا الذكاء الاصطناعي بعدل وأمان ومسؤولية، من خلال ألعاب صغيرة وفيديوهات وشرح مبسّط.": "Teaching primary-school children to use AI fairly, safely, and responsibly through small games, videos, and simple explanations.", "الموقع بيفتح على الموبايل والكمبيوتر من غير أي تحميل، وبيطلّع شهادة باسم اللي خلّص المهام.": "The site opens on phones and computers with no download, and prints a certificate in the name of whoever finishes the missions.", "وإيه علاقة ده بمصر وبيئتنا؟": "What does this have to do with Egypt and our environment?", "سنة 2023 أطلق المجلس الوطني للذكاء الاصطناعي «الميثاق المصري للذكاء الاصطناعي المسؤول»، وده معناه إن الاستخدام الأخلاقي للتقنية أولوية عندنا.": "In 2023, Egypt's National Council for Artificial Intelligence launched the “Egyptian Charter for Responsible AI”, which means ethical use of technology is a priority for us.", "الأطفال بقوا بيستخدموا الإنترنت والتطبيقات كتير، فحماية بياناتهم مهمة، وفي مصر قانون لحماية البيانات الشخصية رقم 151 لسنة 2020. دي فكرة مهمة «خزنة الخصوصية».": "Children use the internet and apps a lot, so protecting their data matters, and Egypt has Personal Data Protection Law No. 151 of 2020. That's the idea behind the “Privacy Vault”.", "انتشار الأخبار والصور المفبركة تحدٍّ حقيقي، وبنتدرّب عليه في «كاشف الحقيقة».": "Fake news and fabricated images are a real challenge, and we practice against them in “Truth Detector”.", "الذكاء الاصطناعي ممكن ما يفهمش لهجاتنا كويس لو ما اتدرّبش على أمثلة كفاية، وده اللي بيوضّحه «مختبر التحيّز».": "AI may not understand our dialects well if it wasn't trained on enough examples, and that's what the “Bias Lab” shows.", "خمس مبادئ لازم روبو يحفظها": "Five principles Robo must learn", "اضغط على أي كارت عشان تقلبه وتعرف المبدأ ومثال عليه.": "Tap any card to flip it and see the principle and an example.", "العدالة": "Fairness", "اضغط واقلب الكارت": "Tap to flip the card", "العدالة وعدم التحيّز": "Fairness and no bias", "لو اتعلّم من أمثلة ناقصة هيظلم ناس. لازم الأمثلة تكون متنوعة.": "If it learns from incomplete examples, it will treat people unfairly. Examples must be diverse.", "مثال: برنامج ما بيفهمش بعض اللهجات كويس.": "Example: a program that doesn't understand some dialects well.", "الخصوصية": "Privacy", "حماية البيانات": "Data protection", "بياناتي ملكي. ما بكتبش عنواني ولا صوري ولا كلمة السر لأي برنامج.": "My data belongs to me. I don't type my address, photo, or password into any program.", "مثال: أسأل حد كبير قبل ما أشارك أي معلومة.": "Example: I ask a grown-up before sharing any information.", "الصدق": "Honesty", "التأكد من المعلومة": "Checking the information", "ممكن يغلط أو يألّف معلومة، فأراجع من مصدر موثوق.": "It can make mistakes or invent information, so I check a trusted source.", "مثال: صورة مفبركة شكلها حقيقي جدًا.": "Example: a fake image that looks very real.", "الشفافية": "Transparency", "الوضوح": "Clarity", "من حقي أعرف مين صنعه وبيقرر إزاي. وأقول لو استعنت بيه.": "I have the right to know who made it and how it decides. And I say when I used it.", "مثال: أكتب في مشروعي «بمساعدة الذكاء الاصطناعي».": "Example: I write in my project “with the help of AI”.", "المسؤولية": "Responsibility", "أنا المسؤول": "I'm responsible", "البرنامج مش مسؤول. أنا المسؤول عن اللي بستخدمه فيه.": "The program isn't responsible. I'm responsible for what I use it for.", "مثال: لو نسخت إجابته، أنا اللي أتحاسب.": "Example: if I copy its answer, I'm the one who is held accountable.", "مهام روبو الثلاثة": "Robo's Three Missions", "كل مهمة بتعلّم روبو مبدأ. لما تخلّص التلاتة هتفتح شهادتك.": "Each mission teaches Robo a principle. Finish all three to unlock your certificate.", "مختبر التحيّز: درّب الروبوت": "Bias Lab: Train the Robot", "لسه": "Not yet", "روبو بيتعلّم يعرف الأشكال من أمثلة. زوّد أمثلة كل شكل بالزرار +، وشوف إزاي الأمثلة الناقصة بتخلّيه يغلط. لازم تجيب ٣ أمثلة على الأقل لكل شكل.": "Robo learns to recognize shapes from examples. Add examples of each shape with the + button, and see how missing examples make him mistaken. You need at least 3 examples of each shape.", "بيانات التدريب": "Training data", "اختبار الروبوت": "Test the robot", "خزنة الخصوصية": "Privacy Vault", "روبو برنامج ذكاء اصطناعي غريب وعايز يعرف عنك معلومات. اختار المعلومات اللي تشاركها معاه، وبعدين اقفل الخزنة.": "Robo is a strange AI program that wants to know things about you. Choose the information you'd share with him, then lock the vault.", "الخزنة مقفولة وآمنة": "The vault is locked and safe", "مستوى الخطر: صفر": "Risk level: Zero", "هتشارك إيه؟": "What will you share?", "أغلق الخزنة": "Lock the vault", "كاشف الحقيقة": "Truth Detector", "روبو بيقول معلومات، بس ساعات بيألّف! قرّر: المعلومة صحيحة ولا غلط أو مخترعة؟ محتاج ٤ إجابات صح من ٥.": "Robo tells you facts, but sometimes he makes things up! Decide: is the information true, or wrong/made-up? You need 4 correct answers out of 5.", "مين قالها؟": "Who said it?", "فين المصدر؟": "Where's the source?", "هلاقيها في مكان تاني؟": "Can I find it somewhere else?", "فيديوهات تعليمية": "Educational Videos", "شاهد الفيديوهات دي عشان تفهم أكتر.": "Watch these videos to understand more.", "فيديو عن الاستخدام الأخلاقي للذكاء الاصطناعي": "Video about the ethical use of AI", "الاستخدام الأخلاقي للذكاء الاصطناعي": "Ethical use of AI", "فيديو بالإنجليزي من جامعة تشارلز ستيرت عن الاستخدام الأمين للذكاء الاصطناعي في الدراسة.": "An English video from Charles Sturt University about honest use of AI in studying.", "افتح على يوتيوب": "Open on YouTube", "أخلاقيات الذكاء الاصطناعي للأطفال": "AI ethics for kids", "فيديوهات مبسّطة بالإنجليزي مناسبة لسننا.": "Simple English videos suitable for our age.", "شوف الفيديوهات": "Watch the videos", "شرح بالعربي": "Explained in Arabic", "فيديوهات عربية عن أخلاقيات الذكاء الاصطناعي.": "Arabic videos about AI ethics.", "الصور والفيديوهات المفبركة": "Fake images and videos", "إزاي نعرف الحقيقي من المصنوع بالذكاء الاصطناعي.": "How to tell the real from what AI made.", "لو الفيديو ما فتحش في الصفحة، اضغط «افتح على يوتيوب». واطلب من ولي أمرك يساعدك في اختيار الفيديوهات.": "If the video doesn't open on the page, press “Open on YouTube”. And ask your parent to help you choose videos.", "قواعدي الخمسة": "My Five Rules", "دي القواعد اللي هلتزم بيها كل ما أستخدم الذكاء الاصطناعي.": "These are the rules I'll follow every time I use AI.", "أفكّر الأول": "I think first", "أحاول بنفسي وبعدين أستعين بيه كمساعد.": "I try by myself, then use it as a helper.", "أحمي بياناتي": "I protect my data", "ما أشاركش اسمي الكامل أو عنواني أو صوري.": "I don't share my full name, address, or photos.", "أتأكد": "I double-check", "أراجع المعلومة من مصدر موثوق.": "I check the information from a trusted source.", "أكون أمين": "I'm honest", "أقول لو استعنت بالذكاء الاصطناعي.": "I say when I used AI.", "أحترم الناس": "I respect people", "ما أستخدمهوش في التنمّر أو تزييف الصور.": "I don't use it for bullying or faking images.", "شكر وتقدير": "Thanks & Appreciation", "كل الشكر لمن دعمونا في هذا العمل.": "Many thanks to everyone who supported us in this work.", "مدير المدرسة": "School Principal", "مستر ياسر عبدالعزيز": "Mr. Yasser Abdelaziz", "معلمة ICT": "ICT Teacher", "مس نسرين": "Miss Nesreen", "مس نهى": "Miss Noha", "شهادة الإنجاز": "Achievement Certificate", "الشهادة بتطلع باسمك ومدرستك اللي كتبتهم. أكمل المهام التلاتة عشان تفتحها وتطبعها.": "The certificate comes out with the name and school you entered. Finish all three missions to unlock it and print it.", "شهادة تقدير": "Certificate of Appreciation", "تُمنح هذه الشهادة إلى": "This certificate is awarded to", "اسمك": "Your name", "مدرسة": "School:", "مدرستك": "Your school", "لإتمام مهام «علّم الروبوت الأخلاق» في أخلاقيات الذكاء الاصطناعي بنجاح: العدالة، والخصوصية، والتأكد من المعلومة.": "for successfully completing the “Teach the Robot Ethics” missions in AI ethics: fairness, privacy, and checking information.", "الموقع من إعداد الطالب: عمر أمين محمد أمين — مدرسة فاقوس الرسمية للغات 2 — الفصل 5D": "Website prepared by student: Omar Amin Mohamed Amin — Faqous Official Language School 2 — Class 5D", "الشهادة مقفولة": "Certificate locked", "خلّص المهام التلاتة عشان تفتحها": "Finish the three missions to unlock it", "اطبع الشهادة": "Print certificate", "غيّر اسمي ومدرستي": "Change my name and school", "الطالب: عمر أمين محمد أمين": "Student: Omar Amin Mohamed Amin", "مدرسة فاقوس الرسمية للغات 2": "Faqous Official Language School 2", "الفصل 5D": "Class 5D", "أهلًا! أنا روبو": "Hi! I'm Robo", "اكتب اسمك ومدرستك، وشهادة الإنجاز هتطلع باسمك.": "Type your name and school, and your achievement certificate will come out with your name.", "مثال: أحمد محمد": "Example: Ahmed Mohamed", "اسم مدرستك": "Your school name", "مثال: مدرسة فاقوس الرسمية للغات": "Example: Faqous Official Language School", "الفصل (اختياري)": "Class (optional)", "مثال: 5D": "Example: 5D", "ابدأ اللعب": "Start playing", "أنا ذكي… بس محتاج أتعلم الأخلاق": "I'm smart… but I need to learn ethics", "ساعدني في ٣ مهام!": "Help me with 3 missions!", "هتاخد شهادة في الآخر 🏅": "You'll get a certificate at the end 🏅", "مختبر التحيّز": "Bias Lab", "✓ تمّت": "✓ Done", "مبروك! خلّصت كل المهام. شهادتك جاهزة 🏅": "Congratulations! You finished all the missions. Your certificate is ready 🏅", "دوائر": "Circles", "مربعات": "Squares", "مثلثات": "Triangles", "؟": "?", "روبو لسه ما اتعلّمش حاجة. ضيف أمثلة!": "Robo hasn't learned anything yet. Add examples!", "ممتاز! روبو اتعلّم من أمثلة متوازنة، فبقى بيعرف كل الأشكال بعدل.": "Excellent! Robo learned from balanced examples, so he recognizes all shapes fairly.", "كويس! كمّل لحد ما كل شكل يبقى ليه ٣ أمثلة على الأقل.": "Good! Keep going until every shape has at least 3 examples.", "لوني المفضل": "My favorite color", "هوايتي (زي الرسم أو الكورة)": "My hobby (like drawing or football)", "سؤال في درس": "A question in a lesson", "أكلتي المفضلة": "My favorite food", "اسمي الكامل": "My full name", "عنوان بيتي": "My home address", "اسم مدرستي": "My school name", "صورتي": "My photo", "كلمة سر حسابي": "My account password", "رقم تليفوني": "My phone number", "الخزنة اتفتحت!": "The vault has opened!", "صفر": "Zero", "متوسط": "Medium", "عالي": "High", "ماينفعش أعرف بيانات زي دي! 🚫": "I shouldn't know data like this! 🚫", "أمان تمام! بس اختار على الأقل معلومتين آمنتين عشان روبو يعرف يساعدك.": "All safe! But pick at least two safe items so Robo can help you.", "عرّفني على هوايتك مثلًا 😊": "Tell me about your hobby, for example 😊", "أحسنت! شاركت معلومات آمنة بس وحميت بياناتك الشخصية.": "Well done! You shared only safe information and protected your personal data.", "روبو قال: عاصمة مصر هي القاهرة.": "Robo said: The capital of Egypt is Cairo.", "صح، دي معلومة حقيقية وتقدر تتأكد منها من أي أطلس.": "Correct, this is real information and you can verify it in any atlas.", "روبو قال: الشمس بتدور حوالين الأرض.": "Robo said: The Sun goes around the Earth.", "غلط! الأرض هي اللي بتدور حوالين الشمس.": "Wrong! The Earth is the one that goes around the Sun.", "روبو ذكر بحثًا علميًا اسمه «كيف تتكلم الأسماك؟» من جامعة القاهرة سنة 2030.": "Robo mentioned a scientific study called “How Do Fish Talk?” from Cairo University in 2030.", "سنة 2030 لسه ما جاتش! ساعات بيألّف مراجع مش موجودة، فلازم نتأكد.": "The year 2030 hasn't come yet! He sometimes invents references that don't exist, so we must check.", "روبو قال: الإنسان محتاج الأكسجين عشان يعيش.": "Robo said: Humans need oxygen to live.", "صح، ودي معلومة علمية معروفة.": "Correct, and it's well-known science.", "روبو قال: الماء بيتجمّد عند 50 درجة مئوية.": "Robo said: Water freezes at 50 degrees Celsius.", "غلط! الماء بيتجمّد عند صفر درجة مئوية تقريبًا.": "Wrong! Water freezes at about zero degrees Celsius.", "ألعب تاني": "Play again", "معلومة صحيحة ✅": "True information ✅", "غلط أو مخترعة ❌": "Wrong or made-up ❌", "سجّل بياناتك": "Your details", "اكتب اسمك الأول.": "Type your name first.", "اكتب اسم مدرستك.": "Type your school name.", "الروبوت روبو": "Robo the robot", "شاطر! إنت كاشف حقيقة شاطر.": "Great job! You're a great truth detector.", "قريب! حاول تاني وانتبه للمعلومات المخترعة.": "Almost! Try again and watch out for made-up information.", "شوف النتيجة": "See the result", "اللي بعده": "Next", "عمر أمين محمد أمين": "Omar Amin Mohamed Amin", "عمر": "Omar", "قاموس روبو": "Robo's Dictionary", "كلمات مهمة لازم تعرفها. اضغط على أي كلمة عشان تعرف معناها.": "Important words you should know. Tap any word to see what it means.", "القاموس": "Glossary", "اتصرّف إزاي؟": "What would you do?", "مواقف ممكن تحصل معاك. فكّر الأول، وبعدين اضغط عشان تشوف التصرف الصح.": "Situations that could happen to you. Think first, then tap to see the right move.", "محافظة الشرقية - إدارة فاقوس التعليمية": "Sharqia Governorate - Faqous Educational Administration", "الذكاء الاصطناعي": "Artificial Intelligence", "برنامج بيتعلّم من أمثلة كتير عشان يقدر يجاوب أو يتعرّف على صور أو يكتب، من غير ما حد يكتب له كل خطوة.": "A program that learns from lots of examples so it can answer, recognize pictures, or write, without someone typing every step for it.", "البيانات": "Data", "المعلومات والأمثلة اللي بنديها للبرنامج عشان يتعلّم منها، زي الصور والكلمات والأرقام.": "The information and examples we give a program to learn from, like pictures, words, and numbers.", "الخوارزمية": "Algorithm", "خطوات مرتبة بيمشي عليها الكمبيوتر عشان يحل مشكلة، زي وصفة الأكل بالظبط.": "Ordered steps a computer follows to solve a problem, just like a cooking recipe.", "التحيّز": "Bias", "لما البرنامج يعامل ناس أو حاجات معاملة مش عادلة لأنه اتعلّم من أمثلة ناقصة.": "When a program treats people or things unfairly because it learned from incomplete examples.", "التزييف العميق": "Deepfake", "صورة أو فيديو أو صوت اتعمل بالذكاء الاصطناعي عشان يبان حقيقي وهو مش حقيقي.": "A picture, video, or voice made with AI to look real when it isn't.", "هلوسة الذكاء الاصطناعي": "AI Hallucination", "لما الذكاء الاصطناعي يألّف معلومة أو مرجع مش موجود وهو شايف إنها صح.": "When AI makes up information or a source that doesn't exist, as if it were true.", "لو برنامج ذكاء اصطناعي طلب منك اسمك الكامل وعنوانك؟": "What if an AI program asks for your full name and address?", "ما تكتبهمش. بياناتك الشخصية تفضل خاصة، واسأل حد كبير قبل ما تشارك أي معلومة.": "Don't type them. Keep your personal data private, and ask a grown-up before sharing any information.", "لو شفت صورة أو فيديو غريب جدًا على الإنترنت؟": "What if you see a very strange picture or video online?", "ما تصدّقوش على طول. دوّر عليه في مصدر موثوق، واسأل حد كبير، وما تشاركوش قبل ما تتأكد.": "Don't believe it right away. Look for it in a trusted source, ask a grown-up, and don't share it before you're sure.", "لو صاحبك عايز يعمل صورة مفبركة لزميلكم بالذكاء الاصطناعي عشان يضايقه؟": "What if your friend wants to make a fake AI picture of a classmate to upset them?", "لأ! ده تنمّر. ارفض، وقول لمدرس أو ولي أمرك.": "No! That's bullying. Refuse, and tell a teacher or your parent.", "لو ساعدك الذكاء الاصطناعي في الواجب؟": "What if AI helped you with your homework?", "قول لمدرسك بصراحة، واتأكد إنك فاهم الإجابة بنفسك.": "Tell your teacher honestly, and make sure you understand the answer yourself."};
+var AR=/[\u0600-\u06FF]/;
+var norm=function(s){return s.replace(/[\s\u00a0]+/g," ").trim();};
+var w=function(x){x=norm(x);return D[x]!==undefined?D[x]:x;};
+var low=function(x){return w(x).toLowerCase();};
+var P=[
+[/^روبو اتعلّم من (.+) كتير و(.+) قليل، فبيغلط فيها\. ده اسمه تحيّز في البيانات، مش إنه بيكره حد!$/,function(m,a,b){return "Robo learned from lots of "+low(a)+" and only a few "+low(b)+", so he gets them wrong. This is called data bias, not hatred!";}],
+[/^أنا مش عارف (.+) كويس! أمثلتي عنها قليلة 😕$/,function(m,a){return "I don't know "+low(a)+" well! I have few examples of them 😕";}],
+[/^ماينفعش تشارك: (.+)\. دي بيانات شخصية لازم تفضل خاصة\.$/,function(m,a){return "You shouldn't share: "+a.split("،").map(w).join(", ").toLowerCase()+". This is personal data that must stay private.";}],
+[/^أهلًا يا (.+)! اقلب الكروت وبعدين ابدأ المهام 🚀$/,function(m,a){return "Hi "+w(a)+"! Flip the cards, then start the missions 🚀";}],
+[/^برافو! خلّصت مهمة «(.+)» 🎉$/,function(m,a){return "Bravo! You finished “"+w(a)+"” 🎉";}],
+[/^سؤال (\d+) من (\d+)$/,function(m,a,b){return "Question "+a+" of "+b;}],
+[/^مستوى الخطر: (.+)$/,function(m,a){return "Risk level: "+w(a);}],
+[/^(صح!|مش بالظبط\.) (.+)$/,function(m,a,b){return (a==="صح!"?"Correct! ":"Not quite. ")+w(b);}],
+[/^\| الفصل (.+)$/,function(m,a){return "| Class "+a;}],
+[/^نقّص أمثلة (.+)$/,function(m,a){return "Fewer "+low(a)+" examples";}],
+[/^زوّد أمثلة (.+)$/,function(m,a){return "More "+low(a)+" examples";}],
+[/^👤 (.+)$/,function(m,a){return "👤 "+w(a);}]
+];
+function tr(k){if(D[k]!==undefined)return D[k];for(var i=0;i<P.length;i++){var m=k.match(P[i][0]);if(m)return P[i][1].apply(null,m);}return null;}
+var lang="ar",orig=new WeakMap(),last=new WeakMap(),oattr=new WeakMap(),ATT=["placeholder","aria-label","title","alt"],SEL="[placeholder],[aria-label],[title],[alt]";
+function trText(n){
+  var v=n.nodeValue;if(!v||!AR.test(v)||last.get(n)===v)return;
+  var r=tr(norm(v));if(r==null)return;
+  var lead=v.match(/^[\s\u00a0]*/)[0],trail=v.match(/[\s\u00a0]*$/)[0],nv=lead+r+trail;
+  orig.set(n,v);last.set(n,nv);n.nodeValue=nv;
+}
+function trAttrs(el){
+  ATT.forEach(function(a){
+    var v=el.getAttribute(a);if(!v||!AR.test(v))return;
+    var r=tr(norm(v));if(r==null)return;
+    var o=oattr.get(el)||{};o[a]=v;oattr.set(el,o);el.setAttribute(a,r);
+  });
+}
+var flt={acceptNode:function(n){var t=n.parentNode&&n.parentNode.nodeName;return(t==="SCRIPT"||t==="STYLE")?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}};
+function enTree(root){
+  if(root.nodeType===3){trText(root);return;}
+  if(root.nodeType!==1)return;
+  if(root.matches(SEL))trAttrs(root);
+  Array.prototype.forEach.call(root.querySelectorAll(SEL),trAttrs);
+  var tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,flt),n,list=[];
+  while((n=tw.nextNode()))list.push(n);
+  list.forEach(trText);
+}
+function arTree(root){
+  var tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,flt),n,list=[];
+  while((n=tw.nextNode()))list.push(n);
+  list.forEach(function(x){if(orig.has(x)){x.nodeValue=orig.get(x);orig.delete(x);last.delete(x);}});
+  Array.prototype.forEach.call(root.querySelectorAll(SEL),function(el){
+    var o=oattr.get(el);if(!o)return;
+    Object.keys(o).forEach(function(a){el.setAttribute(a,o[a]);});oattr.delete(el);
+  });
+}
+var mo=new MutationObserver(function(ms){
+  if(lang!=="en")return;
+  ms.forEach(function(m){
+    if(m.type==="characterData")trText(m.target);
+    else Array.prototype.forEach.call(m.addedNodes,enTree);
+  });
+});
+mo.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+var btn=document.getElementById("lang");
+function setDate(){
+  var el=document.getElementById("certDate");if(!el)return;
+  try{
+    var en=lang==="en";
+    el.textContent=(en?"Date: ":"التاريخ: ")+new Date().toLocaleDateString(en?"en-US":"ar-EG",{year:"numeric",month:"long",day:"numeric"});
+  }catch(e){}
+}
+function setLang(l){
+  lang=l;var h=document.documentElement;h.lang=l;h.dir=l==="en"?"ltr":"rtl";
+  if(l==="en")enTree(h);else arTree(h);
+  setDate();
+  btn.textContent=l==="en"?"عربي":"English";
+  try{localStorage.setItem("aiEthicsLang",l);}catch(e){}
+}
+btn.addEventListener("click",function(){setLang(lang==="ar"?"en":"ar");});
+var sv=null;try{sv=localStorage.getItem("aiEthicsLang");}catch(e){}
+if(sv==="en")setLang("en");
+})();
+</script>
+</body>
+</html>
